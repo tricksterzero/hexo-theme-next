@@ -17,6 +17,7 @@ NexT.boot.registerEvents = function() {
       document.body.classList.toggle('site-nav-on');
     });
 
+    const duration = 50;
     document.querySelectorAll('.sidebar-nav li').forEach((element, index) => {
       element.addEventListener('click', () => {
         NexT.utils.activateSidebarPanel(index);

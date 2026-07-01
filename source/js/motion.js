@@ -17,7 +17,7 @@ NexT.motion.integrator = {
     if (!CONFIG.motion.async) this.queue = [this.queue.flat()];
     this.queue.forEach(sequence => {
       const timeline = window.anime.timeline({
-        duration: CONFIG.motion?.duration ?? 200,
+        duration: CONFIG.motion?.duration ?? 100,
         easing  : 'linear'
       });
       sequence.forEach(item => {
@@ -36,8 +36,8 @@ NexT.motion.middleWares = {
       sequence.push({
         targets,
         scaleX  : [0, 1],
-        duration: 500,
-        deltaT  : '-=200'
+        duration: 250,
+        deltaT  : '-=100'
       });
     }
 
@@ -46,7 +46,7 @@ NexT.motion.middleWares = {
         targets,
         opacity: 1,
         top    : 0,
-        deltaT : sequenceQueue ? '-=200' : '-=0'
+        deltaT : sequenceQueue ? '-=100' : '-=0'
       });
     }
 
@@ -92,7 +92,7 @@ NexT.motion.middleWares = {
         sequence.push({
           targets,
           complete: () => targets.classList.add('animated', animation),
-          deltaT  : '-=100'
+          deltaT  : '-=50'
         });
       });
     }
