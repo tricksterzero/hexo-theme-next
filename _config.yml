@@ -88,7 +88,6 @@ open_graph:
     #twitter_id: <twitter:creator>
     #twitter_site: <twitter:site>
     #twitter_image: <twitter:image>
-    #google_plus: <g+:profile_link>
     #fb_admins: <fb:admin_id>
     #fb_app_id: <fb:app_id>
 
@@ -365,8 +364,6 @@ theme_color:
 body_scrollbar:
   # Place the scrollbar over the content.
   overlay: false
-  # Reserving space for the scrollbar gutter even if the content is not overflowing.
-  stable: false
 
 codeblock:
   # Code Highlight theme
@@ -575,6 +572,8 @@ math:
     enable: false
     # Available values: none | ams | all
     tags: none
+    # Available values: overflow | scroll | scale | truncate | linebreak
+    display_overflow: scroll
 
   katex:
     enable: false
@@ -599,10 +598,6 @@ fancybox: false
 # Warning: Do not enable both `fancybox` and `mediumzoom`.
 # For more information: https://medium-zoom.francoischalifour.com
 mediumzoom: false
-
-# Vanilla JavaScript plugin for lazyloading images.
-# For more information: https://apoorv.pro/lozad.js/demo/
-lazyload: false
 
 # Automatically insert whitespace between CJK and half-width characters.
 # For more information: https://github.com/vinta/pangu.js
@@ -814,13 +809,13 @@ plausible:
   script_url: # https://plausible.io/js/script.js
   site_domain: # www.example.com
 
-# Another tool to show number of visitors to each article.
-# Visit https://console.firebase.google.com/u/0/ to get apiKey and projectId.
-# Visit https://firebase.google.com/docs/firestore/ to get more information about firestore.
+# Show the number of visitors to each article using the Firestore REST API.
+# Visit https://console.firebase.google.com/ to get projectId.
+# Visit https://firebase.google.com/docs/firestore/use-rest-api for more information.
+# Anonymous requests are authorized by your Firestore Security Rules.
 firestore:
   enable: false
   collection: articles # Required, a string collection name to access firestore database
-  apiKey: # Required
   projectId: # Required
 
 # Show Views / Visitors of the website / page with busuanzi.

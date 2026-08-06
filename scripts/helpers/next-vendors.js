@@ -5,7 +5,6 @@
 hexo.extend.helper.register('js_vendors', function() {
   const { config, theme } = this;
   const vendors = [];
-  if (theme.motion.enable) vendors.push('anime');
   if (theme.prism.enable && !config.prismjs.preprocess) {
     vendors.push('prism', 'prism_autoloader');
     if (config.prismjs.line_number) {
