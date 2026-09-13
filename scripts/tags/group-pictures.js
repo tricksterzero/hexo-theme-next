@@ -127,7 +127,8 @@ module.exports = ctx => function(args, content) {
 
   content = ctx.render.renderSync({ text: content, engine: 'markdown' });
 
-  const pictures = content.match(/(<a[^>]*>((?!<\/a)(.|\n))+<\/a>)|(<img[^>]+>)/g);
+  // 画像/リンクが1つも無いブロックではmatchがnullを返し、以降のslice呼び出しで例外になるため空配列にフォールバック
+  const pictures = content.match(/(<a[^>]*>((?!<\/a)(.|\n))+<\/a>)|(<img[^>]+>)/g) || [];
 
   return `<div class="group-picture">${templates.dispatch(pictures, group, layout)}</div>`;
 };
