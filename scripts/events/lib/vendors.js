@@ -27,10 +27,14 @@ module.exports = hexo => {
   }
   for (const [key, value] of Object.entries(dependencies)) {
     // This script will be executed repeatedly when Hexo listens file changes
-    // But the variable vendors[key] only needs to be modified once
+    // But the variable vendors[key] only needs to be modified once.
+    // `custom` marks it as already resolved, so re-runs don't fall through to the
+    // generic CDN resolution below and silently overwrite the custom URL.
+    if (vendors[key]?.custom) continue;
     if (vendors[key] && typeof vendors[key] === 'string') {
       vendors[key] = {
-        url: url_for.call(hexo, vendors[key])
+        url   : url_for.call(hexo, vendors[key]),
+        custom: true
       };
       continue;
     }
