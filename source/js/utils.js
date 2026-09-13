@@ -19,6 +19,29 @@ HTMLElement.prototype.wrap = function(wrapper) {
 
 NexT.utils = {
 
+  // role="button"なdiv/span/a(nativeのbutton/フォーカス可能なaは対象外)にキーボード操作を付与する。
+  // 冪等なので複数回呼んでよい(検索ポップアップのように後からDOMへ追加される要素向けに、
+  // クローン直後にも呼び出す想定)。
+  registerA11yButtons() {
+    document.querySelectorAll('[role="button"]').forEach(element => {
+      if (element.matches('button, a[href]')) return;
+      if (!element.hasAttribute('tabindex')) {
+        element.setAttribute('tabindex', '0');
+      }
+    });
+
+    if (this._a11yButtonKeydownRegistered) return;
+    this._a11yButtonKeydownRegistered = true;
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const target = event.target.closest('[role="button"]');
+      if (!target || target.matches('button, a[href]')) return;
+      // SpaceキーによるページスクロールとEnterキーによるform submit相当の副作用を防ぐ
+      event.preventDefault();
+      target.click();
+    });
+  },
+
   scrollTo(target, top) {
     if (window.CSS?.supports('scroll-behavior', 'smooth')) {
       target.scrollTo({

@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   document.body.appendChild(document.querySelector('#search-popup-template').content.cloneNode(true));
+  // クローン直後に追加された.popup-btn-close等にキーボード操作(tabindex/Enter/Space)を付与する
+  NexT.utils.registerA11yButtons();
   const localSearch = new LocalSearch({
     path             : CONFIG.path,
     top_n_per_article: CONFIG.localsearch.top_n_per_article,
@@ -55,21 +57,27 @@ document.addEventListener('DOMContentLoaded', () => {
   input.addEventListener('input', inputEventFunction);
   window.addEventListener('search:loaded', inputEventFunction);
 
+  // キーボード操作(Tabで開いてEnter)時、閉じたら開く直前にフォーカスがあった要素へ戻す
+  let lastFocusedElement = null;
+  const openSearch = () => {
+    lastFocusedElement = document.activeElement;
+    NexT.utils.setGutter();
+    document.body.classList.add('search-active');
+    // Wait for search-popup animation to complete
+    setTimeout(() => input.focus(), 500);
+    if (!localSearch.isfetched) localSearch.fetchData();
+  };
+
   // Handle and trigger popup window
   document.querySelectorAll('.popup-trigger').forEach(element => {
-    element.addEventListener('click', () => {
-      NexT.utils.setGutter();
-      document.body.classList.add('search-active');
-      // Wait for search-popup animation to complete
-      setTimeout(() => input.focus(), 500);
-      if (!localSearch.isfetched) localSearch.fetchData();
-    });
+    element.addEventListener('click', openSearch);
   });
 
   // Monitor main search box
   const onPopupClose = () => {
     NexT.utils.setGutter('0');
     document.body.classList.remove('search-active');
+    lastFocusedElement?.focus();
   };
 
   document.querySelector('.search-pop-overlay').addEventListener('click', event => {
@@ -85,10 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('keydown', event => {
     if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
       event.preventDefault();
-      NexT.utils.setGutter();
-      document.body.classList.add('search-active');
-      setTimeout(() => input.focus(), 500);
-      if (!localSearch.isfetched) localSearch.fetchData();
+      openSearch();
     }
   });
   window.addEventListener('keyup', event => {

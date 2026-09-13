@@ -2,6 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   document.body.appendChild(document.querySelector('#search-popup-template').content.cloneNode(true));
+  // クローン直後に追加された.popup-btn-close等にキーボード操作(tabindex/Enter/Space)を付与する
+  NexT.utils.registerA11yButtons();
   const { indexName, appID, apiKey, hits } = CONFIG.algolia;
   const client = window['algoliasearch/lite'].liteClient(appID, apiKey);
 

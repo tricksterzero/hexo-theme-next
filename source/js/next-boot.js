@@ -2,12 +2,21 @@
 
 NexT.boot = {};
 
-NexT.boot.registerEvents = function() {
+// 1つの処理が失敗しても他の登録が巻き添えで止まらないよう、処理ごとに個別にtry-catchする
+const guard = (label, fn) => {
   try {
-    NexT.utils.registerScrollPercent();
-    NexT.utils.registerCanIUseTag();
-    NexT.utils.updateFooterPosition();
+    fn();
+  } catch (error) {
+    console.warn(`Something went wrong while ${label}`, error);
+  }
+};
 
+NexT.boot.registerEvents = function() {
+  guard('registering scroll percent', () => NexT.utils.registerScrollPercent());
+  guard('registering CanIUse tag', () => NexT.utils.registerCanIUseTag());
+  guard('updating footer position', () => NexT.utils.updateFooterPosition());
+
+  guard('registering mobile nav toggle', () => {
     // Mobile top menu bar.
     document.querySelector('.site-nav-toggle').addEventListener('click', event => {
       const siteNav = document.querySelector('.site-nav');
@@ -15,14 +24,17 @@ NexT.boot.registerEvents = function() {
       siteNav.style.setProperty('--scroll-height', siteNav.scrollHeight + 'px');
       document.body.classList.toggle('site-nav-on');
     });
+  });
 
-    const duration = 50;
+  guard('registering sidebar panel toggle', () => {
     document.querySelectorAll('.sidebar-nav li').forEach((element, index) => {
       element.addEventListener('click', () => {
         NexT.utils.activateSidebarPanel(index);
       });
     });
+  });
 
+  guard('registering hashchange handler', () => {
     window.addEventListener('hashchange', () => {
       const tHash = location.hash;
       if (tHash !== '' && !tHash.match(/%\S{2}/)) {
@@ -30,49 +42,48 @@ NexT.boot.registerEvents = function() {
         target?.click();
       }
     });
+  });
 
+  guard('registering tabs:click handler', () => {
     window.addEventListener('tabs:click', e => {
       NexT.utils.registerCodeblock(e.target);
     });
-  } catch (error) {
-    console.warn('Something went wrong while NexT registering events', error);
-  }
+  });
 };
 
 NexT.boot.refresh = function() {
-  try {
-    // Register JS handlers by condition option.
-    // Need to add config option in Front-End at 'scripts/helpers/next-config.js' file.
-    CONFIG.prism && window.Prism.highlightAll();
-    CONFIG.mediumzoom && window.mediumZoom('.post-body :not(a) > img, .post-body > img', {
-      background: 'var(--content-bg-color)'
-    });
-    CONFIG.lazyload && window.lozad('.post-body img').observe();
-    if (CONFIG.pangu) {
-      // Polyfill for requestIdleCallback if not supported
-      if (!window.requestIdleCallback) {
-        window.requestIdleCallback = function(cb) {
-          cb({
-            didTimeout   : false,
-            timeRemaining: () => 100
-          });
-        };
-      }
-      [...document.getElementsByTagName('main')].forEach(e => window.pangu.spacingNode(e));
+  // Register JS handlers by condition option.
+  // Need to add config option in Front-End at 'scripts/helpers/next-config.js' file.
+  // ライブラリ本体の読み込み失敗(CDN障害等)が他の初期化処理を巻き添えにしないよう個別にguardする
+  guard('running Prism', () => CONFIG.prism && window.Prism.highlightAll());
+  guard('running mediumZoom', () => CONFIG.mediumzoom && window.mediumZoom('.post-body :not(a) > img, .post-body > img', {
+    background: 'var(--content-bg-color)'
+  }));
+  guard('running lozad', () => CONFIG.lazyload && window.lozad('.post-body img').observe());
+  guard('running pangu', () => {
+    if (!CONFIG.pangu) return;
+    // Polyfill for requestIdleCallback if not supported
+    if (!window.requestIdleCallback) {
+      window.requestIdleCallback = function(cb) {
+        cb({
+          didTimeout   : false,
+          timeRemaining: () => 100
+        });
+      };
     }
+    [...document.getElementsByTagName('main')].forEach(e => window.pangu.spacingNode(e));
+  });
 
-    CONFIG.exturl && NexT.utils.registerExtURL();
-    NexT.utils.wrapTableWithBox();
-    NexT.utils.registerCodeblock();
-    NexT.utils.registerTabsTag();
-    NexT.utils.registerActiveMenuItem();
-    NexT.utils.registerLangSelect();
-    NexT.utils.registerSidebarTOC();
-    NexT.utils.registerPostReward();
-    NexT.utils.registerVideoIframe();
-  } catch (error) {
-    console.warn('Something went wrong during NexT refresh', error);
-  }
+  guard('registering external url', () => CONFIG.exturl && NexT.utils.registerExtURL());
+  guard('wrapping table with box', () => NexT.utils.wrapTableWithBox());
+  guard('registering codeblock', () => NexT.utils.registerCodeblock());
+  guard('registering tabs tag', () => NexT.utils.registerTabsTag());
+  guard('registering active menu item', () => NexT.utils.registerActiveMenuItem());
+  guard('registering lang select', () => NexT.utils.registerLangSelect());
+  guard('registering sidebar TOC', () => NexT.utils.registerSidebarTOC());
+  guard('registering post reward', () => NexT.utils.registerPostReward());
+  guard('registering video iframe', () => NexT.utils.registerVideoIframe());
+  guard('registering a11y buttons', () => NexT.utils.registerA11yButtons());
 };
 
 NexT.boot.motion = function() {

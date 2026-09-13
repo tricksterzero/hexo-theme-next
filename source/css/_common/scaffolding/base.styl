@@ -54,9 +54,23 @@ a {
   text-decoration: none;
   word-wrap();
 
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
   &:hover {
     border-bottom-color: var(--link-hover-color);
     color: var(--link-hover-color);
+  }
+}
+
+// role="button"なdiv/span(ナビトグル・検索トリガー等)はaの:focus-visibleルールの対象外のため、
+// キーボード操作時のフォーカス表示を別途確保する
+[role='button'] {
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
   }
 }
 
