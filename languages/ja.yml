@@ -91,6 +91,7 @@ follow_me:
   welcome: 他の公開チャンネルへようこそ
 accessibility:
   nav_toggle: ナビゲーションバーの切り替え
+  sidebar_toggle: サイドバーの切り替え
   prev_page: 前のページ
   next_page: 次のページ
   back_to_top: Back to top

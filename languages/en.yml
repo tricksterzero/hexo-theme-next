@@ -107,6 +107,7 @@ follow_me:
 
 accessibility:
   nav_toggle: Toggle navigation bar
+  sidebar_toggle: Toggle sidebar
   prev_page: Previous page
   next_page: Next page
   back_to_top: Back to top
