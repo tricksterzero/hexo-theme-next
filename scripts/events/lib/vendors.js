@@ -31,6 +31,15 @@ module.exports = hexo => {
     // `custom` marks it as already resolved, so re-runs don't fall through to the
     // generic CDN resolution below and silently overwrite the custom URL.
     if (vendors[key]?.custom) continue;
+    // `false` disables the vendor: next_vendors() outputs nothing for it
+    // (e.g. when its CSS is bundled into main.css by a site script).
+    if (vendors[key] === false) {
+      vendors[key] = {
+        url   : '',
+        custom: true
+      };
+      continue;
+    }
     if (vendors[key] && typeof vendors[key] === 'string') {
       vendors[key] = {
         url   : url_for.call(hexo, vendors[key]),

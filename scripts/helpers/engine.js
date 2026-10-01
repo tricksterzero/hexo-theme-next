@@ -42,6 +42,8 @@ hexo.extend.helper.register('next_vendors', function(name, {
   defer = !async
 } = {}) {
   const { url, integrity } = this.theme.vendors[name];
+  // Disabled by `vendors.<name>: false` (see scripts/events/lib/vendors.js)
+  if (!url) return '';
   const type = url.endsWith('css') ? 'css' : 'js';
   if (type === 'css') {
     if (integrity) return `<link rel="stylesheet" href="${url}" integrity="${integrity}" crossorigin="anonymous">`;
