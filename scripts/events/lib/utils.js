@@ -62,6 +62,16 @@ function getVendors({ name, alias, version, file, minified, local, custom }) {
   };
 }
 
+// Replacement for the deprecated `url.parse()` (DEP0169).
+// `new URL()` throws on relative URLs, so return an empty object (no protocol / hostname) for them
+function parseURL(url) {
+  try {
+    return new URL(url);
+  } catch {
+    return {};
+  }
+}
+
 const points = {
   views: [
     'head',
@@ -86,5 +96,6 @@ module.exports = {
   resolve,
   highlightTheme,
   getVendors,
+  parseURL,
   points
 };
