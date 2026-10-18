@@ -49,9 +49,25 @@
         </div>
         <ul class="links-of-blogroll-list">
           {%- for blogrollText, blogrollURL in theme.links %}
+            {%- if blogrollURL is string %}
             <li class="links-of-blogroll-item">
               {{ next_url(blogrollURL, blogrollText, {title: blogrollURL}) }}
             </li>
+            {%- elif blogrollURL is mapping %}
+            {#- カテゴリ: 子は1世代まで(URL の文字列だけを出し、さらに入れ子にしたものは出さない) #}
+            <li class="links-of-blogroll-category">
+              <span class="links-of-blogroll-category-title">{{ blogrollText }}</span>
+              <ul class="links-of-blogroll-children">
+                {%- for childText, childURL in blogrollURL %}
+                  {%- if childURL is string %}
+                  <li class="links-of-blogroll-child">
+                    {{ next_url(childURL, childText, {title: childURL}) }}
+                  </li>
+                  {%- endif %}
+                {%- endfor %}
+              </ul>
+            </li>
+            {%- endif %}
           {%- endfor %}
         </ul>
       </div>
